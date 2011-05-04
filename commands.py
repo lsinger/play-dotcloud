@@ -64,6 +64,7 @@ def deploy(command, env, app, deployment = None):
         print "~ Error: not a valid Play! application"
         print "~ "
         sys.exit(-1)
+    
     if deployment == None or deployment == '':
         deployment = app.conf.get("dotcloud.deployment")
         if deployment == '':
@@ -71,18 +72,24 @@ def deploy(command, env, app, deployment = None):
             print "~ "
             sys.exit(-1)
     print "~ Deploying to \""+ deployment + "\" with id \"prod\" (use --%myid or dotcloud.id in application.conf to change)"
-    originalId = env['id']
-    env['id'] = "prod"
+    
+    print "~ Creating WAR file ..."
     tmpPath = tempfile.mkdtemp()
     warDirPath = os.path.join(tmpPath, "root")
-    print warDirPath
+    
+    originalId = env['id']
+    env['id'] = "prod"
     play.commands.war.execute(command=command, app=app, args=['--output', warDirPath, '--zip'], env=env)
+    env['id'] = originalId
+    
     shutil.rmtree(warDirPath)
     
+    print "~ WAR file created, contacting dotcloud ..."
     try:
         retCode = subprocess.call(['dotcloud', 'push', deployment, tmpPath])
     except OSError, err:
         print "~ Error: dotcloud executable not installed or not in PATH variable"
         print "~ "
         sys.exit(-1)
-    env['id'] = originalId
+    
+    print "~ Done! "
