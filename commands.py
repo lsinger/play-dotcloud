@@ -1,10 +1,16 @@
 # Here you can create play commands that are specific to the module, and extend existing commands
+import getopt
+import tempfile
+from play.utils import *
+import play.commands.war
+import subprocess
+import shutil
 
 MODULE = 'dotcloud'
 
 # Commands that are specific to your module
 
-COMMANDS = ['dotcloud:hello']
+COMMANDS = ['dotcloud:deploy']
 
 def execute(**kargs):
     command = kargs.get("command")
@@ -12,9 +18,28 @@ def execute(**kargs):
     args = kargs.get("args")
     env = kargs.get("env")
 
-    if command == "dotcloud:hello":
-        print "~ Hello"
+    if command == "dotcloud:deploy":
+        deployment = ""
+        try:
+            optlist, args2 = getopt.getopt(args, '', ['deployment='])
+            for o, a in optlist:
+                if o == '--deployment':
+                    deployment = a
 
+        except getopt.GetoptError, err:
+            print "~ Error: %s" % str(err)
+            print "~ "
+            sys.exit(-1)
+        
+        retCode = -1
+        try:
+            retCode = subprocess.call(['dotcloud'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except OSError, err:
+            print "~ Error: dotcloud executable not installed or not in PATH variable"
+            print "~ "
+            sys.exit(-1)
+        
+        deploy(command, env, app, deployment)
 
 # This will be executed before any command (new, run...)
 def before(**kargs):
@@ -33,3 +58,31 @@ def after(**kargs):
 
     if command == "new":
         pass
+
+def deploy(command, env, app, deployment = None):
+    if app.conf == None:
+        print "~ Error: not a valid Play! application"
+        print "~ "
+        sys.exit(-1)
+    if deployment == None or deployment == '':
+        deployment = app.conf.get("dotcloud.deployment")
+        if deployment == '':
+            print "~ Error: no deployment given; use --deployment or specify it in application.conf as dotcloud.deployment"
+            print "~ "
+            sys.exit(-1)
+    print "~ Deploying to \""+ deployment + "\" with id \"prod\" (use --%myid or dotcloud.id in application.conf to change)"
+    originalId = env['id']
+    env['id'] = "prod"
+    tmpPath = tempfile.mkdtemp()
+    warDirPath = os.path.join(tmpPath, "root")
+    print warDirPath
+    play.commands.war.execute(command=command, app=app, args=['--output', warDirPath, '--zip'], env=env)
+    shutil.rmtree(warDirPath)
+    
+    try:
+        retCode = subprocess.call(['dotcloud', 'push', deployment, tmpPath])
+    except OSError, err:
+        print "~ Error: dotcloud executable not installed or not in PATH variable"
+        print "~ "
+        sys.exit(-1)
+    env['id'] = originalId
