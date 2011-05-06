@@ -4,8 +4,6 @@ This module allows you to deploy your Play! application to dotcloud (*http://dot
 
 To push to dotcloud, a deployment name is required. Either give it at the command line ("--deployment myapp.www") or add it to your application.conf ("dotcloud.deployment=myapp.www"). From the Play! application's root directory, you may then issue "play dotcloud:deploy" to push the current version of your application to dotcloud. 
 
-Note: In some cases, the application will not run after deployment, even though no errors occurred. Running "dotcloud logs myapp.www" in another terminal window resolves this issue. Dotcloud are currently investigating this issue. 
-
 # Requirements #
 
 You need to have the dotcloud command line client installed. 
