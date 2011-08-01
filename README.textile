@@ -40,3 +40,9 @@ You need to have the dotcloud command line client installed. I only tested this 
 This module only works for applications that contain a single Java service. If your application uses multiple Java services, you need to use the dotcloud CLI. For example, you might have a "frontend" Play! application and a "backend" Play! application on the same dotcloud application, each deployed as its own Java service -- these setups are not supported by this module. A single Java service paired with something else like a database service works fine, however. 
 
 For more information, consult the documentation in "this module's GitHub repository":https://github.com/lsinger/play-dotcloud. 
+
+h1. History
+
+0.1: Initial release during dotcloud beta phase. 
+
+0.2: Support for new CLI (0.4.x) after dotcloud beta phase. 
