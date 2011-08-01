@@ -60,10 +60,17 @@ def after(**kargs):
         pass
 
 def deploy(command, env, app, deployment = None):
+    # check if everything is in place
+    
     if app.conf == None:
         print "~ Error: not a valid Play! application"
         print "~ "
         sys.exit(-1)
+    
+    try:
+        assert os.path.exists(os.path.join(app.path, 'conf', 'dotcloud.yml'))
+    except AssertionError:
+        print "~ Oops. conf/dotcloud.yml missing. Please consult with dotcloud's documentation on how to create one."
     
     if deployment == None or deployment == '':
         deployment = app.conf.get("dotcloud.deployment")
@@ -71,19 +78,31 @@ def deploy(command, env, app, deployment = None):
             print "~ Error: no deployment given; use --deployment or specify it in application.conf as dotcloud.deployment"
             print "~ "
             sys.exit(-1)
-    print "~ Deploying to \""+ deployment + "\" with id \"prod\" (use --%myid or dotcloud.id in application.conf to change)"
+    print "~ Deploying to \""+ deployment + "\" with id \"prod\" (use dotcloud.id in application.conf to change)"
     
+    # create WAR file
     print "~ Creating WAR file ..."
     tmpPath = tempfile.mkdtemp()
     warDirPath = os.path.join(tmpPath, "root")
     
     originalId = env['id']
-    env['id'] = "prod"
+    
+    dotcloudId = app.conf.get("dotcloud.id")
+    if dotcloudId == '':
+        env['id'] = dotcloudId
+    else:
+        env['id'] = "prod"
+    
     play.commands.war.execute(command=command, app=app, args=['--output', warDirPath, '--zip'], env=env)
     env['id'] = originalId
     
     shutil.rmtree(warDirPath)
     
+    # copy conf/dotcloud.yml to tmpPath
+    shutil.copyfile(os.path.join(app.path, 'conf', 'dotcloud.yml'), os.path.join(tmpPath, 'dotcloud.yml'))
+    print tmpPath
+    
+    # push to dotcloud
     print "~ WAR file created, contacting dotcloud ..."
     try:
         retCode = subprocess.call(['dotcloud', 'push', deployment, tmpPath])
@@ -92,4 +111,5 @@ def deploy(command, env, app, deployment = None):
         print "~ "
         sys.exit(-1)
     
+    shutil.rmtree(tmpPath)
     print "~ Done! "

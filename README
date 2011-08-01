@@ -1,12 +1,42 @@
 # Usage #
 
-This module allows you to deploy your Play! application to dotcloud (*http://dotcloud.com*). It creates a WAR file from the current application and then pushes it to dotcloud. 
+This module allows you to deploy your Play! application to [dotcloud](http://dotcloud.com). 
 
-To push to dotcloud, a deployment name is required. Either give it at the command line ("--deployment myapp.www") or add it to your application.conf ("dotcloud.deployment=myapp.www"). From the Play! application's root directory, you may then issue "play dotcloud:deploy" to push the current version of your application to dotcloud. 
+## Installation ##
+
+First, install the module from the Play! module repository like so: 
+
+	play install dotcloud
+
+## Prepare your Play! application ##
+
+Tell Play! that you want your application to use the dotcloud module by adding it to your `conf/dependencies.yml` file. It might look like this: 
+
+	require:
+		- play
+		- play -> dotcloud
+
+Then, create a `dotcloud.yml` file in your application's `conf` directory. The file might look like this: 
+
+	www:
+		type: java
+	db:
+		type: mysql
+
+For more information, consult the dotcloud documentation. 
+
+## Push to dotcloud ##
+
+To push to dotcloud, a deployment name is required. Either give it at the command line (`--deployment myapp`) or add it to your application.conf (`dotcloud.deployment=myapp`). From the Play! application's root directory, you may then issue 
+
+`play dotcloud:deploy`
+
+ to push the current version of your application to dotcloud. 
 
 # Requirements #
 
-You need to have the dotcloud command line client installed. 
+You need to have the dotcloud command line client installed. I only tested this module on Mac OS X -- it *should* work on all platforms supported by Play!, however. 
 
-I only tested this module on Mac OS X -- it *should* work on all platforms supported by Play!, however. 
+This module only works for applications that contain a single Java service. If your application uses multiple Java services, you need to use the dotcloud CLI. For example, you might have a "frontend" Play! application and a "backend" Play! application on the same dotcloud application, each deployed as its own Java service -- these setups are not supported by this module. A single Java service paired with something else like a database service works fine, however. 
 
+For more information, consult the documentation in [this module's GitHub repository](https://github.com/lsinger/play-dotcloud). 
