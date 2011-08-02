@@ -1,6 +1,6 @@
 h1. Usage
 
-This module allows you to deploy your Play! application to "dotcloud":http://dotcloud.com. 
+This module helps you deploy your Play! application to "dotcloud":http://dotcloud.com. 
 
 h2. Installation
 
@@ -14,9 +14,9 @@ Tell Play! that you want your application to use the dotcloud module by adding i
 
 bc. require:
 	- play
-	- play -> dotcloud
+	- play -> dotcloud 0.2
 
-Then, create a @dotcloud.yml@ file in your application's @conf@ directory. The file might look like this: 
+Now run @play dependencies@ to install the module into your application. Then, create a @dotcloud.yml@ file in your application's @conf@ directory. The file might look like this: 
 
 bc. www:
 	type: java
