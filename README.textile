@@ -33,6 +33,16 @@ To push to dotcloud, a deployment name is required. Either give it at the comman
 
  to push the current version of your application to dotcloud. 
 
+h2. Specify a MySQL database
+
+If you want to use a MySQL database also running on dotcloud, this is the format you need to use for specifying the database connection in your @application.conf@ file:
+
+bc. %prod.db=mysql
+%prod.db.url=jdbc:mysql://(subdomainOfDatabaseService).dotcloud.com:(port)/(databaseName)
+%prod.db.driver=com.mysql.jdbc.Driver
+%prod.db.user=(username)
+%prod.db.pass=(password)
+
 h1. Requirements
 
 You need to have the dotcloud command line client installed. I only tested this module on Mac OS X -- it *should* work on all platforms supported by Play!, however. 
