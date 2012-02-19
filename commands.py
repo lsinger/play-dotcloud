@@ -78,20 +78,21 @@ def deploy(command, env, app, deployment = None):
             print "~ Error: no deployment given; use --deployment or specify it in application.conf as dotcloud.deployment"
             print "~ "
             sys.exit(-1)
-    print "~ Deploying to \""+ deployment + "\" with id \"prod\" (use dotcloud.id in application.conf to change)"
+            
+    originalId = env['id']
+
+    dotcloudId = app.conf.get("dotcloud.id")
+    if dotcloudId != '':
+      env['id'] = dotcloudId
+    else:
+      env['id'] = "prod"
+            
+    print "~ Deploying to \""+ deployment + "\" with id \"" + env['id'] + "\" (use dotcloud.id in application.conf to change)"
     
     # create WAR file
     print "~ Creating WAR file ..."
     tmpPath = tempfile.mkdtemp()
     warDirPath = os.path.join(tmpPath, "root")
-    
-    originalId = env['id']
-    
-    dotcloudId = app.conf.get("dotcloud.id")
-    if dotcloudId == '':
-        env['id'] = dotcloudId
-    else:
-        env['id'] = "prod"
     
     play.commands.war.execute(command=command, app=app, args=['--output', warDirPath, '--zip'], env=env)
     env['id'] = originalId

@@ -32,6 +32,8 @@ To push to dotcloud, a deployment name is required. Either give it at the comman
 @play dotcloud:deploy@
 
  to push the current version of your application to dotcloud. 
+ 
+By default it will push the application using the id @prod@ if you want to deploy with a different id then you cant specific it in your application.conf (@dotcloud.id=fwk_id@)
 
 h2. Specify a MySQL database
 
