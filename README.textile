@@ -14,7 +14,7 @@ Tell Play! that you want your application to use the dotcloud module by adding i
 
 bc. require:
 	- play
-	- play -> dotcloud 0.2
+	- play -> dotcloud 0.3
 
 Now run @play dependencies@ to install the module into your application. Then, create a @dotcloud.yml@ file in your application's @conf@ directory. The file might look like this: 
 
@@ -33,7 +33,7 @@ To push to dotcloud, a deployment name is required. Either give it at the comman
 
  to push the current version of your application to dotcloud. 
  
-By default it will push the application using the id @prod@ if you want to deploy with a different id then you cant specific it in your application.conf (@dotcloud.id=fwk_id@)
+By default, application will be pushed using @prod@ id. If you want to deploy using a different id, please specify it in your conf/application.conf (@dotcloud.id=your_id@). 
 
 h2. Specify a MySQL database
 
@@ -58,3 +58,5 @@ h1. History
 0.1: Initial release during dotcloud beta phase. 
 
 0.2: Support for new CLI (0.4.x) after dotcloud beta phase. 
+
+0.3: Now properly uses the id specified in application.conf, thanks to Burn0ut07! 
